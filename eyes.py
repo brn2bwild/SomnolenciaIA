@@ -83,7 +83,7 @@ while True:
         texto = f"EAR: {EAR_promedio:.2f}"
         cv2.putText(frame, texto, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
 
-    cv2.imshow("oJOS", frame)
+    cv2.imshow("ojos", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 camara.release()
