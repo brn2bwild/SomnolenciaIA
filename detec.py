@@ -77,11 +77,11 @@ while True:
 
         EAR_promedio = (EAR_izq + EAR_der) / 2.0
 
-        for punto in ojo_izq:
-            cv2.circle(frame, punto, 2, (0, 255, 0), -1)
+        # for punto in ojo_izq:
+        #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
 
-        for punto in ojo_der:
-            cv2.circle(frame, punto, 2, (0, 255, 0), -1)
+        # for punto in ojo_der:
+        #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
         """
         if EAR_promedio > 0.17:
             color = (0, 255, 0)  # verde si ojo abierto

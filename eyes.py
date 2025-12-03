@@ -1,6 +1,7 @@
 import math
 import time
 import os
+
 os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 import cv2
 import mediapipe as mp
@@ -24,6 +25,7 @@ face_mesh = mp.solutions.face_mesh.FaceMesh(
 left_eye_idx = [362, 385, 387, 263, 373, 380]  # puntos ojo izquierdo
 right_eye_idx = [33, 160, 158, 133, 153, 144]  # puntos ojo derecho
 
+
 def calcular_ear(ojo):
     p1, p2, p3, p4, p5, p6 = ojo  # puntos de los ojos mediante un array
     # distancias euclidianas np.linalg.norm()
@@ -35,65 +37,67 @@ def calcular_ear(ojo):
     print(ear, end="\r")
     return ear
 
-camara = cv2.VideoCapture(0)
 
-if not camara.isOpened():
+cap = cv2.VideoCapture(0)
+if not cap.isOpened():
     print("Failed to open capture device")
     exit(1)
 
 while True:
-    ok, frame = camara.read()
-    if not ok:
+    print("", end="\r")
+    ret, frame = cap.read()
+
+    if not ret:
+        print("Can't receive frame (stream end?). Exiting ...")
         break
-    # frame = cv2.read(frame)
     alto, ancho, _ = frame.shape
 
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     resultados = face_mesh.process(frame_rgb)
-    """
-    def punto_vista(ojos):
-        nuevosPuntos = np.array([int(landmarks[i].x * ancho), 
-                                 int(landmarks[i].y * alto)]
-                              for i in ojos)
-        return nuevosPuntos
-    """
+
+    # def punto_vista(ojos):
+    #     nuevosPuntos = np.array(
+    #         [int(landmarks[i].x * ancho), int(landmarks[i].y * alto)] for i in ojos
+    #     )
+    #     return nuevosPuntos
+
     if resultados.multi_face_landmarks:
-        landmarks = resultados.multi_face_landmarks[0].landmark
-        ojo_izq = []
-        ojo_der = []  # iran las coordenadas convertidas en puntos
-        # usar los array de los ojos
+        #     landmarks = resultados.multi_face_landmarks[0].landmark
+        #     ojo_izq = []
+        #     ojo_der = []  # iran las coordenadas convertidas en puntos
+        #     # usar los array de los ojos
 
-        # print("rostro detectado", end="\r")
+        print("rostro detectado", end="\r")
 
-        for i in left_eye_idx:
-            x = int(landmarks[i].x * ancho)
-            y = int(landmarks[i].y * alto)
-            ojo_izq.append((x, y))
+        # for i in left_eye_idx:
+        #     x = int(landmarks[i].x * ancho)
+        #     y = int(landmarks[i].y * alto)
+        #     ojo_izq.append((x, y))
 
-        for i in right_eye_idx:
-            x = int(landmarks[i].x * ancho)
-            y = int(landmarks[i].y * alto)
-            ojo_der.append((x, y))
+        # for i in right_eye_idx:
+        #     x = int(landmarks[i].x * ancho)
+        #     y = int(landmarks[i].y * alto)
+        #     ojo_der.append((x, y))
 
-        EAR_izq = calcular_ear(ojo_izq)
-        EAR_der = calcular_ear(ojo_der)
+        # EAR_izq = calcular_ear(ojo_izq)
+        # EAR_der = calcular_ear(ojo_der)
 
-        EAR_promedio = (EAR_izq + EAR_der) / 2.0
+        # EAR_promedio = (EAR_izq + EAR_der) / 2.0
 
         # for punto in ojo_izq:
         #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
 
         # for punto in ojo_der:
         #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
-        """
-        if EAR_promedio > 0.17:
-            color = (0, 255, 0)  # verde si ojo abierto
-        else:
-            color = (0, 0, 255)  # rojo si cerrado
-            texto = "Dormido"
-            cv2.putText(frame, texto, (30, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
-        """
+
+        # if EAR_promedio > 0.17:
+        #     color = (0, 255, 0)  # verde si ojo abierto
+        # else:
+        #     color = (0, 0, 255)  # rojo si cerrado
+        #     texto = "Dormido"
+        #     cv2.putText(frame, texto, (30, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+
         # texto = f"EAR: {EAR_promedio:.2f}"
         # cv2.putText(frame, texto, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
 
@@ -125,23 +129,24 @@ while True:
         #     2,
         # )
 
-        if EAR_izq <= 0.17 and EAR_der <= 0.17 and PARPADEO is False:
-            CONTEO += 1
-            PARPADEO = True
-            INICIO = time.time()
-        elif EAR_izq > 0.17 and EAR_der > 0.17 and PARPADEO is True:
-            PARPADEO = False
-            FINAL = time.time()
-        TIEMPO = round(FINAL - INICIO, 0)
+        # if EAR_izq <= 0.17 and EAR_der <= 0.17 and PARPADEO is False:
+        #     CONTEO += 1
+        #     PARPADEO = True
+        #     INICIO = time.time()
+        # elif EAR_izq > 0.17 and EAR_der > 0.17 and PARPADEO is True:
+        #     PARPADEO = False
+        #     FINAL = time.time()
+        # TIEMPO = round(FINAL - INICIO, 0)
 
-        if TIEMPO >= 3:
-            CONTEO_SUE += 1
-            MUESTRA = TIEMPO
-            INICIO = 0
-            FINAL = 0
-
-    # cv2.imshow("ojos", frame)
-    if 0xFF == ord("q"):
+        # if TIEMPO >= 3:
+        #     CONTEO_SUE += 1
+        #     MUESTRA = TIEMPO
+        #     INICIO = 0
+        #     FINAL = 0
+    else:
+        print("                   ", end="\r")
+    # cv2.imshow("ojos", frame_rgb)
+    if cv2.waitKey(1) == ord("q"):
         break
-camara.release()
-# cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
