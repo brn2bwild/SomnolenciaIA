@@ -6,6 +6,8 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+from picamera2 import Picamera2
+
 PARPADEO = False
 CONTEO = 0
 TIEMPO = 0
