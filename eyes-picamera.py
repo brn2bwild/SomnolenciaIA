@@ -41,10 +41,14 @@ def calcular_ear(ojo):
 
 # Initialize PiCamera
 picam2 = Picamera2()
-picam2.preview_configuration.main.size = (1280, 720)
-picam2.preview_configuration.main.format = "RGB888"
-picam2.preview_configuration.align()
-picam2.configure("preview")
+# picam2.preview_configuration.main.size = (1280, 720)
+# picam2.preview_configuration.main.format = "RGB888"
+# picam2.preview_configuration.align()
+# picam2.configure("preview")
+
+camera_config = picam2.create_video_configuration(main={"format": 'XRGB8888', "size": (640, 480)})
+picam2.configure(camera_config)
+
 picam2.start()
 
 time.sleep(0.1)
