@@ -47,13 +47,11 @@ picam2.preview_configuration.align()
 picam2.configure("preview")
 picam2.start()
 
+time.sleep(0.1)
+
 while True:
     print("", end="\r")
     frame = picam2.capture_array()
-
-    if not frame:
-        print("Can't receive frame (stream end?). Exiting ...")
-        break
 
     alto, ancho, _ = frame.shape
 
