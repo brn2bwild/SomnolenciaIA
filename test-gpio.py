@@ -1,9 +1,9 @@
 import RPi.GPIO as gpio
 import time
 
-BLUE_LED = 23
-RED_LED = 24
-BUZZER = 25
+BLUE_LED = 16
+RED_LED = 18
+BUZZER = 22
 
 gpio.setmode(gpio.BOARD)
 gpio.setwarnings(False)
