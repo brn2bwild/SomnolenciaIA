@@ -22,8 +22,8 @@ while True:
     # result_frame = detect_single_color(im, Your_color, my_color_lower, my_color_upper, (0, 255, 0))  # Change the color display accordingly
 
     # Program Termination
-    cv2.imshow("Single Color Detection in Real-Time", im)
-    if cv2.waitKey(10) & 0xFF == ord('q'):
+    cv.imshow("Single Color Detection in Real-Time", im)
+    if cv.waitKey(10) & 0xFF == ord('q'):
         picam2.stop()
-        cv2.destroyAllWindows()
+        cv.destroyAllWindows()
         break
