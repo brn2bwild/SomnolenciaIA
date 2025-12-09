@@ -5,8 +5,20 @@ import os
 import cv2
 import mediapipe as mp
 import numpy as np
+import RPi.GPIO as gpio
 
 from picamera2 import Picamera2
+
+BLUE_LED = 23
+RED_LED = 24
+BUZZER = 25
+
+gpio.setmode(gpio.BOARD)
+gpio.setwarnings(False)
+
+gpio.setup(BLUE_LED, gpio.OUT)
+gpio.setup(RED_LED, gpio.OUT)
+gpio.setup(BUZZER, gpio.OUT)
 
 PARPADEO = False
 CONTEO = 0
@@ -51,6 +63,8 @@ picam2.configure(camera_config)
 
 picam2.start()
 
+gpio.output(BLUE_LED, True)
+
 time.sleep(0.1)
 
 while True:
@@ -74,6 +88,9 @@ while True:
         #     ojo_izq = []
         #     ojo_der = []  # iran las coordenadas convertidas en puntos
         #     # usar los array de los ojos
+
+        gpio.output(RED_LED, True)
+        gpio.output(BUZZER, True)
 
         print("rostro detectado", end="\r")
 
@@ -152,6 +169,9 @@ while True:
         #     FINAL = 0
     else:
         print("                    ", end="\r")
+        gpio.output(RED_LED, False)
+        gpio.output(BUZZER, False)
+
     # cv2.imshow("ojos", frame_rgb)
     if cv2.waitKey(1) == ord("q"):
         picam2.stop()

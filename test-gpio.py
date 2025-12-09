@@ -6,10 +6,11 @@ RED_LED = 24
 BUZZER = 25
 
 gpio.setmode(gpio.BOARD)
+gpio.setwarnings(False)
 
-gpio.setup(BLUE_LED, gpio.OUTPUT)
-gpio.setup(RED_LED, gpio.OUTPUT)
-gpio.setup(BUZZER, gpio.OUTPUT)
+gpio.setup(BLUE_LED, gpio.OUT)
+gpio.setup(RED_LED, gpio.OUT)
+gpio.setup(BUZZER, gpio.OUT)
 
 
 gpio.output(BLUE_LED, True)
