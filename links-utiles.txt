@@ -1,0 +1,13 @@
+https://github.com/make2explore/MediaPipe-Installation-on-RaspberryPi/tree/main
+https://docs.sunfounder.com/projects/ai-lab-kit/en/latest/mediapipe/mp_0_setup.html
+https://randomnerdtutorials-com.translate.goog/raspberry-pi-picamera2-python/?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc
+https://wiki.seeedstudio.com/es/reTerminal_DM_Color_detection/
+https://learnopencv.com/driver-drowsiness-detection-using-mediapipe-in-python/
+https://www.engineersgarage.com/opencv4-5-raspberry-pi-image-video-access-recording/
+https://www.reddit.com/r/learnpython/comments/zxxsal/open_cv_video_from_webcam_takes_abnormally_long/?tl=es-419
+https://www.raspberrypi.com/documentation/computers/camera_software.html
+https://protonestiot.medium.com/how-to-use-raspberry-pi-camera-for-machine-learning-with-opencv-and-picamera2-ecc663407afe
+https://www.etechnophiles.com/rpi-zero-2w-board-layout-pinout-specs-price/
+https://www.theengineeringprojects.com/2021/03/what-is-raspberry-pi-zero-pinout-specs-projects-datasheet.html
+https://projects.raspberrypi.org/en/projects/physical-computing/3
+https://wiki.geekworm.com/How_to_Install_RPi.GPIO_Python_Library
