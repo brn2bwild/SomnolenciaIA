@@ -3,6 +3,7 @@ import os
 
 # os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 import cv2 as cv
+import mediapipe as mp
 
 from picamera2 import Picamera2
 
@@ -22,8 +23,8 @@ while True:
     # result_frame = detect_single_color(im, Your_color, my_color_lower, my_color_upper, (0, 255, 0))  # Change the color display accordingly
 
     # Program Termination
-    cv.imshow("Single Color Detection in Real-Time", im)
+    # cv.imshow("Single Color Detection in Real-Time", im)
     if cv.waitKey(10) & 0xFF == ord('q'):
         picam2.stop()
-        cv.destroyAllWindows()
+        # cv.destroyAllWindows()
         break
