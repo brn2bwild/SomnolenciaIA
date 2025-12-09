@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
+# os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 import cv2 as cv
 
 from picamera2 import Picamera2
