@@ -1,7 +1,12 @@
 import math
 import time
 import os
+<<<<<<< HEAD
 os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
+=======
+
+# os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
+>>>>>>> c7ff21a58c729d8eac6250974aff88132c763862
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -9,25 +14,40 @@ import RPi.GPIO as gpio
 
 from picamera2 import Picamera2
 
-#se usan los números físicos de los pines de la tarjeta
+# se usan los números físicos de los pines de la tarjeta
 BLUE_LED = 16
 RED_LED = 18
 BUZZER = 22
 
+# Configuración de los pines de entrada y salida
 gpio.setmode(gpio.BOARD)
 gpio.setwarnings(False)
 
+# Se configuran los pines como entradas
 gpio.setup(BLUE_LED, gpio.OUT)
 gpio.setup(RED_LED, gpio.OUT)
 gpio.setup(BUZZER, gpio.OUT)
 
-PARPADEO = False
-CONTEO = 0
-TIEMPO = 0
-INICIO = 0
-FINAL = 0
-CONTEO_SUE = 0
-MUESTRA = 0
+# Variable para la detección de rostro
+rostro_detectado = False
+EAR_promedio = 0
+
+# Variables para el control de los tiempos
+parpadeo = False
+tiempo_rostro_actual = 0
+tiempo_rostro_anterior = time.time()
+tiempo_inicio_ojos_cerrados = 0
+tiempo_final_ojos_cerrados = 0
+# conteo = 0
+# tiempo = 0
+# final = 0
+# conteo_sue = 0
+# muestra = 0
+
+# Variable para el conteo de los fps
+tiempo_actual_fps = 0
+tiempo_anterior_fps = time.tiem()
+fps = 0
 
 face_mesh = mp.solutions.face_mesh.FaceMesh(
     max_num_faces=1,
@@ -48,7 +68,7 @@ def calcular_ear(ojo):
     distancia3 = math.sqrt((p1[0] - p4[0]) ** 2 + (p1[1] - p4[1]) ** 2)  # p1 -- p4
 
     ear = (distancia1 + distancia2) / (2.0 * distancia3)
-    print(ear, end="\r")
+    # print(ear, end="\r")
     return ear
 
 #para pardeo de la led
@@ -62,7 +82,9 @@ picam2 = Picamera2()
 # picam2.preview_configuration.align()
 # picam2.configure("preview")
 
-camera_config = picam2.create_video_configuration(main={"format": 'XRGB8888', "size": (640, 480)})
+camera_config = picam2.create_video_configuration(
+    main={"format": "XRGB8888", "size": (640, 480)}
+)
 picam2.configure(camera_config)
 
 picam2.start()
@@ -73,14 +95,25 @@ time.sleep(0.1)
 
 try:
     while True:
-        print("", end="\r")
         frame = picam2.capture_array()
+
+        if frame is not None:
+            fps += 1
+
+        tiempo_actual_fps = time.time()
+        fps = 1 / (tiempo_actual_fps - tiempo_anterior_fps)
+        tiempo_anterior_fps = tiempo_actual_fps
 
         alto, ancho, _ = frame.shape
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         resultados = face_mesh.process(frame_rgb)
+
+        tiempo_rostro_actual = time.time()
+
+        if tiempo_rostro_actual - tiempo_rostro_anterior >= 0.7:
+            gpio.output(BLUE_LED, not gpio.input(BLUE_LED))
 
         # def punto_vista(ojos):
         #     nuevosPuntos = np.array(
@@ -89,6 +122,7 @@ try:
         #     return nuevosPuntos
 
         if resultados.multi_face_landmarks:
+<<<<<<< HEAD
             gpio.output(BLUE_LED, True)
             landmarks = resultados.multi_face_landmarks[0].landmark
             ojo_izq = []
@@ -97,9 +131,22 @@ try:
 
             #gpio.output(RED_LED, True)
             #gpio.output(BUZZER, True)
+=======
+            rostro_detectado = True
+            landmarks = resultados.multi_face_landmarks[0].landmark
+            ojo_izq = [] # iran las coordenadas convertidas en puntos
+            ojo_der = [] # usar los array de los ojos
+            
 
-            print("rostro detectado", end="\r")
+            gpio.output(BLUE_LED, True)
+>>>>>>> c7ff21a58c729d8eac6250974aff88132c763862
 
+            for i in left_eye_idx:
+                x = int(landmarks[i].x * ancho)
+                y = int(landmarks[i].y * alto)
+                ojo_izq.append((x, y))
+
+<<<<<<< HEAD
             for i in left_eye_idx:
                 x = int(landmarks[i].x * ancho)
                 y = int(landmarks[i].y * alto)
@@ -114,6 +161,17 @@ try:
             EAR_der = calcular_ear(ojo_der)
 
             # EAR_promedio = (EAR_izq + EAR_der) / 2.0
+=======
+            for i in right_eye_idx:
+                x = int(landmarks[i].x * ancho)
+                y = int(landmarks[i].y * alto)
+                ojo_der.append((x, y))
+
+            EAR_izq = calcular_ear(ojo_izq)
+            EAR_der = calcular_ear(ojo_der)
+
+            EAR_promedio = (EAR_izq + EAR_der) / 2.0
+>>>>>>> c7ff21a58c729d8eac6250974aff88132c763862
 
             # for punto in ojo_izq:
             #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
@@ -133,7 +191,7 @@ try:
 
             # cv2.putText(
             #     frame,
-            #     f"parpadeos: {int(CONTEO)}",
+            #     f"parpadeos: {int(conteo)}",
             #     (20, 60),
             #     cv2.FONT_HERSHEY_SIMPLEX,
             #     1,
@@ -142,7 +200,7 @@ try:
             # )
             # cv2.putText(
             #     frame,
-            #     f"Micro suenos: {int(CONTEO_SUE)}",
+            #     f"Micro suenos: {int(conteo_sue)}",
             #     (350, 60),
             #     cv2.FONT_HERSHEY_SIMPLEX,
             #     1,
@@ -151,7 +209,7 @@ try:
             # )
             # cv2.putText(
             #     frame,
-            #     f"Duracion: {int(MUESTRA)}",
+            #     f"Duracion: {int(muestra)}",
             #     (160, 100),
             #     cv2.FONT_HERSHEY_SIMPLEX,
             #     1,
@@ -161,6 +219,7 @@ try:
             print(EAR_izq)
             print(EAR_der)
 
+<<<<<<< HEAD
             if EAR_izq <= 0.17 and EAR_der <= 0.17 and PARPADEO is False:
                 #CONTEO += 1
                 PARPADEO = True
@@ -188,6 +247,40 @@ try:
                 tiempoLedPasado = tiempoLedActual
             #gpio.output(RED_LED, False)
             #gpio.output(BUZZER, False)
+=======
+            if EAR_promedio <= 0.17 and parpadeo is False:
+                tiempo_inicio_ojos_cerrados = time.time()
+                parpadeo = True
+            elif EAR_promedio > 0.17 and parpadeo is True:
+                tiempo_final_ojos_cerrados = time.time()
+                parpadeo = False
+
+            if round(tiempo_final_ojos_cerrados - tiempo_inicio_ojos_cerrados) >= 3:
+                gpio.output(RED_LED, True)
+                gpio.output(BUZZER, True)
+
+            # if EAR_izq <= 0.17 and EAR_der <= 0.17 and parpadeo is False:
+            #     conteo += 1
+            #     parpadeo = True
+            #     tiempo_inicio_ojos_cerrados = time.time()
+            # elif EAR_izq > 0.17 and EAR_der > 0.17 and parpadeo is True:
+            #     parpadeo = False
+            #     final = time.time()
+            # tiempo = round(final - tiempo_inicio_ojos_cerrados, 0)
+
+            # if tiempo >= 3:
+            #     conteo_sue += 1
+            #     muestra = tiempo
+            #     tiempo_inicio_ojos_cerrados = 0
+            #     final = 0
+        else:
+            rostro_detectado = False
+            gpio.output(RED_LED, False)
+            gpio.output(BUZZER, False)
+>>>>>>> c7ff21a58c729d8eac6250974aff88132c763862
+
+
+        print(f"fps: {int(fps)}, rostro detectado: {rostro_detectado}, EAR promedio: {EAR_promedio}", end="\r")
 
 except KeyboardInterrupt:
     print("Programa detenido por el usuario")
@@ -197,4 +290,4 @@ except KeyboardInterrupt:
     gpio.output(BLUE_LED, False)
     gpio.output(RED_LED, False)
     gpio.output(BUZZER, False)
-        # break
+    # break

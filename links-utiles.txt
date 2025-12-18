@@ -11,3 +11,4 @@ https://www.etechnophiles.com/rpi-zero-2w-board-layout-pinout-specs-price/
 https://www.theengineeringprojects.com/2021/03/what-is-raspberry-pi-zero-pinout-specs-projects-datasheet.html
 https://projects.raspberrypi.org/en/projects/physical-computing/3
 https://wiki.geekworm.com/How_to_Install_RPi.GPIO_Python_Library
+https://www.geeksforgeeks.org/python/how-to-catch-a-keyboardinterrupt-in-python/
