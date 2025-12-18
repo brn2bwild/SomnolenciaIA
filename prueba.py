@@ -29,6 +29,9 @@ FINAL = 0
 CONTEO_SUE = 0
 MUESTRA = 0
 
+
+EAR_promedio = 0
+
 face_mesh = mp.solutions.face_mesh.FaceMesh(
     max_num_faces=1,
     refine_landmarks=True,
@@ -48,7 +51,7 @@ def calcular_ear(ojo):
     distancia3 = math.sqrt((p1[0] - p4[0]) ** 2 + (p1[1] - p4[1]) ** 2)  # p1 -- p4
 
     ear = (distancia1 + distancia2) / (2.0 * distancia3)
-    print(ear, end="\r")
+ #   print(ear, end="\r")
     return ear
 
 #para pardeo de la led
@@ -73,7 +76,7 @@ time.sleep(0.1)
 
 try:
     while True:
-        print("", end="\r")
+#        print("", end="\r")
         frame = picam2.capture_array()
 
         alto, ancho, _ = frame.shape
@@ -95,10 +98,7 @@ try:
             ojo_der = []  # iran las coordenadas convertidas en puntos
                  # usar los array de los ojos
 
-            #gpio.output(RED_LED, True)
-            #gpio.output(BUZZER, True)
-
-            print("rostro detectado", end="\r")
+#            print("rostro detectado", end="\r")
 
             for i in left_eye_idx:
                 x = int(landmarks[i].x * ancho)
@@ -113,7 +113,7 @@ try:
             EAR_izq = calcular_ear(ojo_izq)
             EAR_der = calcular_ear(ojo_der)
 
-            # EAR_promedio = (EAR_izq + EAR_der) / 2.0
+            EAR_promedio = (EAR_izq + EAR_der) / 2.0
 
             # for punto in ojo_izq:
             #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
@@ -121,12 +121,29 @@ try:
             # for punto in ojo_der:
             #     cv2.circle(frame, punto, 2, (0, 255, 0), -1)
 
-            # if EAR_promedio > 0.17:
-            #     color = (0, 255, 0)  # verde si ojo abierto
-            # else:
-            #     color = (0, 0, 255)  # rojo si cerrado
-            #     texto = "Dormido"
-            #     cv2.putText(frame, texto, (30, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
+            #if EAR_promedio < 0.17 and PARPADEO is False:
+            #    PARPADEO = True
+            #    INICIO = time.time()
+            #elif EAR_promedio > 0.17 and PARPADEO is True:
+            #    PARPADEO = False
+            #    FINAL = time.time()
+            #else:
+            #    INICIO = 0
+            #    FINAL = 0
+            #    gpio.output(RED_LED, False)
+            #    gpio.output(BUZZER, False)
+            #TIEMPO = round(FINAL - INICIO, 0)
+            #if TIEMPO >= 3:
+            #    gpio.output(RED_LED, True)
+            #    gpio.output(BUZZER, True)
+            #else:
+            #    INICIO = 0
+            #    FINAL = 0
+            #    gpio.output(RED_LED, False)
+            #    gpio.output(BUZZER, False)
+                #color = (0, 0, 255)  # rojo si cerrado
+                #texto = "Dormido"
+                #cv2.putText(frame, texto, (30, 150), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
 
             # texto = f"EAR: {EAR_promedio:.2f}"
             # cv2.putText(frame, texto, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
@@ -153,41 +170,32 @@ try:
             #     frame,
             #     f"Duracion: {int(MUESTRA)}",
             #     (160, 100),
-            #     cv2.FONT_HERSHEY_SIMPLEX,
-            #     1,
-            #     (0, 255, 0),
-            #     2,
-            # )
-            print(EAR_izq)
-            print(EAR_der)
-
-            if EAR_izq <= 0.17 and EAR_der <= 0.17 and PARPADEO is False:
-                #CONTEO += 1
+            #     cv2.FONT_HERSHEY_SIMPLEX
+            if EAR_promedio <= 0.17 and PARPADEO is False:
                 PARPADEO = True
                 INICIO = time.time()
-            elif EAR_izq > 0.17 and EAR_der > 0.17 and PARPADEO is True:
-                PARPADEO = False
-                FINAL = time.time()
-            TIEMPO = round(FINAL - INICIO, 0)
+            elif EAR_promedio <= 0.17 and PARPADEO is True:
+                TIEMPO = round(time.time() - INICIO, 0)
 
-            if TIEMPO >= 3:
-                #CONTEO_SUE += 1
-                #MUESTRA = TIEMPO
-                INICIO = 0
-                FINAL = 0
-                gpio.output(RED_LED, True)
-                gpio.output(BUZZER, True)
+                if TIEMPO > 3:
+                    gpio.output(RED_LED, True)
+                    gpio.output(BUZZER, True)
             else:
+                PARPADEO = False
+                INICIO = 0
                 gpio.output(RED_LED, False)
                 gpio.output(BUZZER, False)
+
         else:
-            print("                    ", end="\r")
+            #print("       no             ", end="\r")
             tiempoLedActual = time.time()
             if tiempoLedActual - tiempoLedPasado >= 1:
                 gpio.output(BLUE_LED, not gpio.input(BLUE_LED))
                 tiempoLedPasado = tiempoLedActual
-            #gpio.output(RED_LED, False)
-            #gpio.output(BUZZER, False)
+            gpio.output(RED_LED, False)
+            gpio.output(BUZZER, False)
+
+        #print(f"rostro detectado: {rostro_detectado}, ear_promedio: {EAR_promedio}, tiempo parpadeo: {TIEMPO}")
 
 except KeyboardInterrupt:
     print("Programa detenido por el usuario")
