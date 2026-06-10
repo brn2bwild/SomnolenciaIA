@@ -175,13 +175,14 @@ try:
 
         else:
             if round(time.time() - tiempo_rostro_anterior, 0) >= 1:
+                tiempo_rostro_anterior = time.time()
                 #gpio.output(BLUE_LED, not gpio.input(BLUE_LED))
+
                 estado_pixel = not estado_pixel
                 if estado_pixel:
                     pixels.fill((0,0,255))
                 else:
                     pixels.fill((0,0,0))
-                tiempo_rostro_anterior = time.time()
 
             #gpio.output(RED_LED, False)
             pixels.fill((0,0,0))
@@ -192,7 +193,9 @@ try:
 except KeyboardInterrupt:
     print("Programa detenido por el usuario")
     picam2.stop()
+    pixels.fill((0,0,0))
+    buzzer.value = False
+
     #gpio.output(BLUE_LED, False)
     #gpio.output(RED_LED, False)
-    #pixels.fill((0,0,0))
     #gpio.output(BUZZER, False)
