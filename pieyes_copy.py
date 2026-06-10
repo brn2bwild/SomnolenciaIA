@@ -1,32 +1,39 @@
 import math
 import time
 import os
-
 os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 import cv2
 import mediapipe as mp
 import numpy as np
-import RPi.GPIO as gpio
-
+#import RPi.GPIO as gpio
+import board
+import neopixel
+import digitalio
 from picamera2 import Picamera2
 
 # se usan los números físicos de los pines de la tarjeta
-BLUE_LED = 16
-RED_LED = 18
-BUZZER = 22
+# BLUE_LED = 16
+#RED_LED = 18
+#BUZZER = 24 # 22
+#pixels = neopixel.NeoPixel(board.D18, 1)
+
 
 # Configuración de los pines de entrada y salida
-gpio.setmode(gpio.BOARD)
-gpio.setwarnings(False)
+#gpio.setmode(gpio.BOARD)
+#gpio.setwarnings(False)
 
 # Se configuran los pines como entradas
-gpio.setup(BLUE_LED, gpio.OUT)
-gpio.setup(RED_LED, gpio.OUT)
-gpio.setup(BUZZER, gpio.OUT)
+#gpio.setup(BLUE_LED, gpio.OUT)
+#gpio.setup(RED_LED, gpio.OUT)
+#gpio.setup(BUZZER, gpio.OUT)
+pixels = neopixel.NeoPixel(board.D18, 1)
+buzzer = digitalio.DigitalInOut(board.D24)
+buzzer.direction = digitalio.Direction.OUTPUT
 
 # Variable para la detección de rostro
 rostro_detectado = False
 EAR_promedio = 0
+estado_pixel = False
 
 # Variables para el control de los tiempos
 parpadeo = False
@@ -81,13 +88,15 @@ picam2 = Picamera2()
 camera_config = picam2.create_video_configuration(
     main={"format": "XRGB8888", "size": (640, 480)}
 )
+#config = picam2.create_video_configuration(main={"size": (640, 480), "format": "BGR888"})
+
 picam2.configure(camera_config)
 
 picam2.start()
 
-#gpio.output(BLUE_LED, True)
-gpio.output(BLUE_LED, False)
-time.sleep(0.1)
+##gpio.output(BLUE_LED, True)
+#gpio.output(BLUE_LED, False)
+#time.sleep(0.1)
 
 try:
     while True:
@@ -99,7 +108,6 @@ try:
         #tiempo_actual_fps = time.time()
         #fps = 1 / (tiempo_actual_fps - tiempo_anterior_fps)
         #tiempo_anterior_fps = tiempo_actual_fps
-
         alto, ancho, _ = frame.shape
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -119,7 +127,8 @@ try:
 
         if resultados.multi_face_landmarks:
 
-            gpio.output(BLUE_LED, True)
+            #gpio.output(BLUE_LED, True)
+            pixels.fill((0,0,255))
             landmarks = resultados.multi_face_landmarks[0].landmark
             ojo_izq = []
             ojo_der = []  # iran las coordenadas convertidas en puntos
@@ -145,28 +154,45 @@ try:
                 parpadeo = True
 
             elif EAR_promedio <= 0.17 and parpadeo is True:
-
+                pixels.fill((0,0,0))
                 if round(time.time() - tiempo_inicio_ojos_cerrados, 0) >= 2:
-                    gpio.output(RED_LED, True)
-                    gpio.output(BUZZER, True)
+                    #gpio.output(RED_LED, True)
+                    #led_red = not led_red
+                    #print ("cerrado")
+                    #pixels.fill((0,0,0))
+                    pixels.fill((255,0,0))
+                    pixels.show()
+                    buzzer.value = True
+                    #gpio.output(BUZZER, True)
 
             else:
                 parpadeo = False
-                gpio.output(RED_LED, False)
-                gpio.output(BUZZER, False)
+                #gpio.output(RED_LED, False)
+                ##estado_pixel = False
+                #if estado_pixel:
+                buzzer.value = False
+                #gpio.output(BUZZER, False)
 
         else:
             if round(time.time() - tiempo_rostro_anterior, 0) >= 1:
-                gpio.output(BLUE_LED, not gpio.input(BLUE_LED))
+                #gpio.output(BLUE_LED, not gpio.input(BLUE_LED))
+                estado_pixel = not estado_pixel
+                if estado_pixel:
+                    pixels.fill((0,0,255))
+                else:
+                    pixels.fill((0,0,0))
                 tiempo_rostro_anterior = time.time()
 
-            gpio.output(RED_LED, False)
-            gpio.output(BUZZER, False)
-        #print(f"fps: {int(fps)}, rostro detectado: {rostro_detectado}, EAR promedio: {EAR_promedio}", end="\r")
+            #gpio.output(RED_LED, False)
+            pixels.fill((0,0,0))
+            buzzer.value = False
+            #gpio.output(BUZZER, False)
+        #print("EAR promedio")
 
 except KeyboardInterrupt:
     print("Programa detenido por el usuario")
     picam2.stop()
-    gpio.output(BLUE_LED, False)
-    gpio.output(RED_LED, False)
-    gpio.output(BUZZER, False)
+    #gpio.output(BLUE_LED, False)
+    #gpio.output(RED_LED, False)
+    #pixels.fill((0,0,0))
+    #gpio.output(BUZZER, False)
