@@ -178,11 +178,12 @@ try:
                 tiempo_rostro_anterior = time.time()
                 #gpio.output(BLUE_LED, not gpio.input(BLUE_LED))
 
-                estado_pixel = not estado_pixel
                 if estado_pixel:
                     pixels.fill((0,0,255))
                 else:
                     pixels.fill((0,0,0))
+                    
+                estado_pixel = not estado_pixel
 
             #gpio.output(RED_LED, False)
             pixels.fill((0,0,0))
